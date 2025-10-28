@@ -1,0 +1,154 @@
+/* ...existing code... */
+:root{
+  --bg:#f4f4f4;
+  --primary:#007bff;
+  --primary-dark:#0056b3;
+  --content-bg:#ffffff;
+  --max-width:980px;
+  --accent:#ef476f;
+}
+
+*{box-sizing:border-box}
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  margin:0;
+  padding:20px;
+  background-color:var(--bg);
+  color:#111;
+  display:flex;
+  justify-content:center;
+}
+.container{width:100%;max-width:var(--max-width)}
+
+/* header */
+.site-header{
+  background-color:#222;
+  color:#fff;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  border-radius:6px;
+}
+.logo{max-width:72px;height:auto;border-radius:6px}
+h1{margin:0;font-size:1.25rem}
+
+/* hero */
+.hero{margin:16px 0}
+.cover{width:100%;height:auto;display:block;border-radius:6px;object-fit:cover}
+
+/* tabs */
+.tabs{display:flex;justify-content:center;gap:8px;margin:18px 0}
+.tab-btn{
+  background-color:var(--primary);
+  color:#fff;
+  border:0;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:background-color .15s;
+}
+.tab-btn:hover{background-color:var(--primary-dark)}
+.tab-btn.active{background-color:var(--primary-dark)}
+
+/* panels */
+.tab-panel{
+  background:var(--content-bg);
+  padding:18px;
+  border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  margin-bottom:18px;
+}
+.hidden{display:none}
+
+/* ----- 新增：Info & Career 样式（字体加粗、图片） ----- */
+.info-panel, .career-panel {
+  font-weight:600; /* 加粗文本 */
+  color:#111;
+}
+
+/* profile box */
+.profile-box{
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+  margin:12px 0 18px;
+}
+.profile-img{
+  width:120px;
+  height:120px;
+  object-fit:cover;
+  border-radius:12px;
+  border:3px solid rgba(0,0,0,0.06);
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+.profile-meta .name{margin:0;font-size:1.15rem}
+.profile-meta .role{margin:6px 0;color:var(--accent);font-weight:700}
+.quick-stats{list-style:none;padding:0;margin:8px 0 0;line-height:1.6}
+.quick-stats li strong{display:inline-block;width:68px;font-weight:800;color:#222}
+
+/* lead paragraph (info description) */
+.lead{font-weight:600;color:#333;line-height:1.6}
+
+/* career gallery */
+.career-gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.career-gallery figure{
+  background:#fff;border-radius:8px;overflow:hidden;border:1px solid #eee;text-align:center;
+}
+.career-gallery img{width:100%;height:120px;object-fit:cover;display:block}
+.career-gallery figcaption{padding:8px;font-size:0.95rem;color:#444}
+
+/* works grid */
+.works-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px}
+.work-item{
+  background:var(--content-bg);
+  border-radius:8px;
+  overflow:hidden;
+  cursor:pointer;
+  border:1px solid #e8e8e8;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  transition:transform .12s,box-shadow .12s;
+  outline:none;
+}
+.work-item:focus{box-shadow:0 6px 18px rgba(0,123,255,0.18);transform:translateY(-4px)}
+.work-item img{width:100%;height:120px;object-fit:cover;display:block}
+.work-title{padding:10px;font-weight:600;text-align:center}
+
+/* modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:1400}
+.modal.hidden{display:none}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:1420}
+.modal-content{
+  position:relative;z-index:1440;
+  width:90%;max-width:900px;background:#000;border-radius:8px;overflow:hidden;
+  max-height:85vh;
+}
+.video-wrap{position:relative;padding-top:56.25%;height:0}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+
+/* close button */
+.modal-close{
+  position:absolute;top:10px;right:10px;z-index:1460;
+  background:rgba(255,255,255,0.95);border:0;width:36px;height:36px;border-radius:50%;
+  font-size:20px;line-height:36px;cursor:pointer;pointer-events:auto;
+}
+
+/* responsive */
+@media (max-width:800px){
+  .profile-box{flex-direction:row;gap:12px}
+  .profile-img{width:96px;height:96px}
+}
+@media (max-width:480px){
+  .logo{max-width:48px}
+  .video-wrap iframe{height:100%}
+  .work-item img{height:100px}
+  .career-gallery img{height:88px}
+}
+/* ...existing code... */
