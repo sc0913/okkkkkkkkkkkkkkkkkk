@@ -22,6 +22,7 @@
         <button class="tab-btn active" data-target="info" role="tab" aria-selected="true">具体信息</button>
         <button class="tab-btn" data-target="career" role="tab" aria-selected="false">爱豆生涯</button>
         <button class="tab-btn" data-target="works" role="tab" aria-selected="false">主要作品视频</button>
+        <button class="tab-btn" data-target="comments" role="tab" aria-selected="false">粉丝留言</button>
       </nav>
 
       <!-- INFO (加粗字体 + 头像 + 快速资料卡) -->
@@ -38,6 +39,7 @@
               <li><strong>出生</strong>：2001-09-13（首尔）</li>
               <li><strong>国籍</strong>：韩国</li>
               <li><strong>职业</strong>：歌手 / 演唱组合成员</li>
+              <li><strong>身高</strong>：186cm
             </ul>
           </div>
         </div>
@@ -129,6 +131,33 @@
           </div>
         </div>
       </section>
+
+      <!-- FANS COMMENTS (新增：粉丝留言) -->
+      <section id="comments" class="tab-panel hidden comments-panel" aria-live="polite">
+        <h2>粉丝留言</h2>
+        <p class="lead">欢迎留下对郑成灿的祝福或想说的话。</p>
+
+        <form id="commentForm" class="comment-form" aria-label="粉丝留言表单">
+          <label>
+            姓名
+            <input type="text" id="commentName" name="name" maxlength="30" placeholder="昵称或匿名" />
+          </label>
+
+          <label>
+            留言
+            <textarea id="commentText" name="message" rows="4" maxlength="500" placeholder="写下你的祝福..." required></textarea>
+          </label>
+
+          <div class="form-actions">
+            <span id="charCount">0 / 500</span>
+            <button type="submit" class="btn-primary">发布留言</button>
+          </div>
+        </form>
+
+        <div class="comments-list" id="commentsList" aria-live="polite">
+          <!-- JS 渲染留言 -->
+        </div>
+      </section>
     </main>
 
     <!-- 视频模态 -->
@@ -143,5 +172,109 @@
     </div>
 
     <script src="script.js"></script>
+
+    <script>
+      // 粉丝留言功能（本脚本仅负责留言相关逻辑，依赖现有的 tab 切换逻辑）
+      (function () {
+        const STORAGE_KEY = 'sungchan_comments_v1';
+        const form = document.getElementById('commentForm');
+        const nameInput = document.getElementById('commentName');
+        const textInput = document.getElementById('commentText');
+        const listEl = document.getElementById('commentsList');
+        const countEl = document.getElementById('charCount');
+
+        function escapeHtml(str) {
+          return str.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]);
+        }
+
+        function loadComments() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+          } catch {
+            return [];
+          }
+        }
+
+        function saveComments(arr) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+        }
+
+        function renderComments() {
+          const comments = loadComments();
+          if (!comments.length) {
+            listEl.innerHTML = '<p class="muted">还没有留言，成为第一个说话的人吧！</p>';
+            return;
+          }
+          listEl.innerHTML = comments
+            .map((c, i) => {
+              const who = escapeHtml(c.name || '匿名');
+              const msg = escapeHtml(c.message);
+              const time = escapeHtml(new Date(c.time).toLocaleString());
+              return `
+                <article class="comment" data-index="${i}">
+                  <header>
+                    <strong class="comment-author">${who}</strong>
+                    <time class="comment-time">${time}</time>
+                  </header>
+                  <p class="comment-body">${msg}</p>
+                  <div class="comment-actions">
+                    <button class="comment-delete" data-index="${i}" aria-label="删除留言">删除</button>
+                  </div>
+                </article>
+              `;
+            })
+            .join('');
+        }
+
+        function addComment(name, message) {
+          const comments = loadComments();
+          comments.unshift({ name: name ? name.trim() : '', message: message.trim(), time: Date.now() });
+          if (comments.length > 200) comments.length = 200; // 限制最大数量
+          saveComments(comments);
+          renderComments();
+        }
+
+        function deleteComment(index) {
+          const comments = loadComments();
+          if (index >= 0 && index < comments.length) {
+            comments.splice(index, 1);
+            saveComments(comments);
+            renderComments();
+          }
+        }
+
+        // 事件绑定
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const msg = textInput.value.trim();
+          if (!msg) return;
+          addComment(nameInput.value, msg);
+          form.reset();
+          countEl.textContent = '0 / 500';
+        });
+
+        textInput.addEventListener('input', () => {
+          countEl.textContent = `${textInput.value.length} / ${textInput.getAttribute('maxlength') || 500}`;
+        });
+
+        listEl.addEventListener('click', (e) => {
+          const del = e.target.closest('.comment-delete');
+          if (!del) return;
+          const idx = Number(del.getAttribute('data-index'));
+          if (Number.isFinite(idx)) {
+            // 简单确认
+            if (confirm('确认删除此条留言？')) deleteComment(idx);
+          }
+        });
+
+        // 初始化渲染
+        document.addEventListener('DOMContentLoaded', renderComments);
+        // 如果页面已加载
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          renderComments();
+        }
+      })();
+    </script>
   </body>
 </html>
